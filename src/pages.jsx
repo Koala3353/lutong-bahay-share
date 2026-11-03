@@ -57,7 +57,28 @@ export function Home({ go }) {
         </div>
       </section>
 
-      <section className="section" id="how">
+      <section className="section" id="numbers">
+        <div className="wrap">
+          <div className="section-head">
+            <h2>The numbers behind the bin</h2>
+            <p>Figures from the UN Environment Programme&apos;s Food Waste Index Report 2024, which covers 2022.</p>
+          </div>
+          <div className="facts">
+            <div className="stat tone-peach"><div className="stat-value">1.05 billion t</div><div className="stat-label">of food wasted worldwide, almost one-fifth of all food available to consumers</div></div>
+            <div className="stat tone-butter"><div className="stat-value">60%</div><div className="stat-label">of that waste happens in households, 28% in food services and 12% in retail</div></div>
+            <div className="stat tone-mint"><div className="stat-value">2.95 million t</div><div className="stat-label">of food wasted by Philippine households in a year, about 26 kg per person</div></div>
+            <div className="stat tone-pink"><div className="stat-value">8 to 10%</div><div className="stat-label">of global greenhouse gas emissions come from food loss and waste</div></div>
+          </div>
+          <p className="sources muted">
+            Sources:{' '}
+            <a href="https://www.unep.org/news-and-stories/press-release/world-squanders-over-1-billion-meals-day-un-report" target="_blank" rel="noreferrer">UNEP press release, 27 March 2024</a>
+            {' · '}
+            <a href="https://bworldonline.com/economy/2024/03/27/584555/phl-household-food-waste-falls-sharply-to-nearly-3-million-tonnes-a-year-unep/" target="_blank" rel="noreferrer">BusinessWorld (Reuters) on the Philippine figure</a>
+          </p>
+        </div>
+      </section>
+
+      <section className="section tint" id="how">
         <div className="wrap">
           <div className="section-head">
             <h2>How a surplus bag works</h2>
@@ -71,7 +92,7 @@ export function Home({ go }) {
         </div>
       </section>
 
-      <section className="section tint" id="model">
+      <section className="section" id="model">
         <div className="wrap split">
           <div className="card">
             <h2>How the business earns</h2>
