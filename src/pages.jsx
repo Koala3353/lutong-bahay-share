@@ -6,7 +6,6 @@ import { useRoom } from './store.jsx'
 
 const base = import.meta.env.BASE_URL
 export const roomUrl = (room, page = 'poll') => `${location.origin}${base}#/r/${room}/${page}`
-const peso = (n) => `₱${Number(n).toLocaleString('en-PH')}`
 
 export function Home({ go }) {
   const [code, setCode] = useState('')
@@ -112,7 +111,7 @@ export function Home({ go }) {
   )
 }
 
-function PageHead({ mood, bag, title, children }) {
+export function PageHead({ mood, bag, title, children }) {
   return (
     <div className="page-head">
       <Mascot mood={mood} bag={bag} size={96} />
@@ -156,127 +155,6 @@ export function Poll({ go }) {
           <h2>{totalVotes} {totalVotes === 1 ? 'answer' : 'answers'} so far</h2>
           <PollResults counts={counts} total={totalVotes} mine={mine} />
         </div>
-      </div>
-    </div>
-  )
-}
-
-const TONES = ['butter', 'peach', 'mint', 'pink']
-
-export function Shop() {
-  const { publish, peerId, bags, impact } = useRoom()
-  const [f, setF] = useState({ shop: '', name: 'Mixed pastry bag', meals: 3, orig: 150, price: 60, qty: 2, pickup: '8:00 to 9:00 PM' })
-  const [error, setError] = useState('')
-  const set = (k) => (e) => setF({ ...f, [k]: e.target.value })
-  const mine = bags.filter((b) => b.peer === peerId)
-
-  const post = (e) => {
-    e.preventDefault()
-    const meals = Number(f.meals), orig = Number(f.orig), price = Number(f.price), qty = Number(f.qty)
-    if (!f.shop.trim() || !f.name.trim()) return setError('Add your shop name and a bag name.')
-    if (![meals, orig, price, qty].every((n) => n > 0)) return setError('Meals, prices and bags left must be more than zero.')
-    if (price >= orig) return setError('The bag price must be lower than the original value.')
-    setError('')
-    publish({
-      type: 'bag', peer: peerId, shop: f.shop.trim(), kind: 'Shop', name: f.name.trim(),
-      meals, orig, price, qty, pickup: f.pickup.trim() || 'Before closing',
-      tone: TONES[Math.floor(Math.random() * TONES.length)],
-    })
-  }
-
-  return (
-    <div className="page wrap">
-      <PageHead mood="happy" title="Post a surplus bag">You are a shop. Bags you post show up on every buyer&apos;s phone.</PageHead>
-      <div className="split">
-        <form className="panel form" onSubmit={post}>
-          <h2>New bag</h2>
-          <label>Shop name<input className="field" value={f.shop} onChange={set('shop')} placeholder="Your shop" /></label>
-          <label>Bag name<input className="field" value={f.name} onChange={set('name')} /></label>
-          <div className="row">
-            <label>Meals<input className="field" type="number" min="1" value={f.meals} onChange={set('meals')} /></label>
-            <label>Original value (₱)<input className="field" type="number" min="1" value={f.orig} onChange={set('orig')} /></label>
-            <label>Bag price (₱)<input className="field" type="number" min="1" value={f.price} onChange={set('price')} /></label>
-          </div>
-          <div className="row" style={{ gridTemplateColumns: '1fr 2fr' }}>
-            <label>Bags<input className="field" type="number" min="1" value={f.qty} onChange={set('qty')} /></label>
-            <label>Pickup window<input className="field" value={f.pickup} onChange={set('pickup')} /></label>
-          </div>
-          {error && <div className="notice" role="alert">{error}</div>}
-          <button className="btn big" type="submit">Post bag</button>
-        </form>
-        <div className="panel">
-          <h2>Your bags</h2>
-          {mine.length === 0 ? (
-            <p className="muted">Nothing posted yet. Post a bag and watch buyers grab it.</p>
-          ) : (
-            <ul className="feed">
-              {mine.map((b) => (
-                <li key={b.id}>
-                  <strong>{b.name}</strong>, {b.left} of {b.qty} left
-                  {b.winners.length > 0 && <> · grabbed by {b.winners.map((w) => w.name).join(', ')}</>}
-                </li>
-              ))}
-            </ul>
-          )}
-          <h2 style={{ marginTop: 32 }}>Room impact</h2>
-          <ImpactCounter impact={impact} />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function BagCard({ bag, peerId, name, tried, onGrab }) {
-  const won = bag.winners.some((w) => w.peer === peerId)
-  const out = bag.left <= 0
-  const lost = !won && out && tried
-  return (
-    <article className="bag rise">
-      <div className="bag-top">
-        <span className={`shop-mark tone-${bag.tone}`} aria-hidden="true">{bag.shop[0]}</span>
-        <div>
-          <h3>{bag.name}</h3>
-          <div className="meta">{bag.shop}</div>
-        </div>
-      </div>
-      <div className="meta">{bag.meals} meals · pickup {bag.pickup}</div>
-      <div className="price"><strong className="num">{peso(bag.price)}</strong><s className="num">{peso(bag.orig)}</s></div>
-      <div>
-        {won ? <span className="pill mine">Yours, pick up {bag.pickup}</span>
-          : out ? <span className="pill out">Sold out</span>
-          : <span className="pill">{bag.left} left</span>}
-      </div>
-      {lost && <div className="notice" role="status">Someone grabbed it first. Try another bag.</div>}
-      <button className="btn" disabled={out || won} onClick={() => onGrab(bag)}>
-        {won ? 'Reserved' : out ? 'Sold out' : `Grab bag as ${name}`}
-      </button>
-    </article>
-  )
-}
-
-export function Buy() {
-  const { publish, peerId, bags, impact } = useRoom()
-  const [name, setName] = useState(() => {
-    try { return localStorage.getItem('lbs-name') || `Buyer ${peerId.slice(0, 3).toUpperCase()}` } catch { return 'Buyer' }
-  })
-  const [tried, setTried] = useState(() => new Set())
-  const grab = (bag) => {
-    setTried((t) => new Set(t).add(bag.id))
-    try { localStorage.setItem('lbs-name', name) } catch { /* ignore */ }
-    publish({ type: 'grab', bagId: bag.id, peer: peerId, name: name.trim() || 'A buyer' })
-  }
-  return (
-    <div className="page wrap">
-      <PageHead mood="cheer" bag title="Grab a bag before it sells out">You are a buyer. Reserve one bag per shop and pick it up before closing.</PageHead>
-      <div className="panel" style={{ marginBottom: 24 }}>
-        <ImpactCounter impact={impact} />
-      </div>
-      <label className="form" style={{ maxWidth: 320 }}>
-        <span style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--ink-2)' }}>Your name</span>
-        <input className="field" value={name} onChange={(e) => setName(e.target.value)} maxLength={24} />
-      </label>
-      <div className="bags">
-        {bags.map((b) => <BagCard key={b.id} bag={b} peerId={peerId} name={name.trim() || 'Buyer'} tried={tried.has(b.id)} onGrab={grab} />)}
       </div>
     </div>
   )

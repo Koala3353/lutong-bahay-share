@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import Mascot from './components/Mascot.jsx'
 import { RoomProvider, useRoom } from './store.jsx'
-import { Home, Poll, Shop, Buy, Screen } from './pages.jsx'
+import { Home, Poll, Screen } from './pages.jsx'
+import { Shop } from './shop.jsx'
+import { Buy } from './buy.jsx'
 
 const parse = () => {
   const path = location.hash.replace(/^#/, '') || '/'

@@ -37,8 +37,10 @@ export function derive(events) {
   const bags = new Map()
   const votes = new Map()
   const grabs = new Map()
+  const pickups = new Set()
 
   for (const ev of events) {
+    if (ev.type === 'pickup') pickups.add(ev.grabId)
     if (ev.type === 'bag') bags.set(ev.id, ev)
     if (ev.type === 'vote') {
       const prev = votes.get(ev.peer)
@@ -59,6 +61,7 @@ export function derive(events) {
         .sort((a, b) => a.ts - b.ts || (a.peer < b.peer ? -1 : 1))
         .filter((g) => (seen.has(g.peer) ? false : seen.add(g.peer)))
         .slice(0, bag.qty)
+        .map((g) => ({ ...g, pickedUp: pickups.has(g.id) }))
       return { ...bag, winners, left: bag.qty - winners.length }
     })
     .sort((a, b) => (b.ts || 0) - (a.ts || 0))
