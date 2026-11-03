@@ -8,7 +8,7 @@ export function openRoom(roomId, { getEvents, onEvents, onPeers }) {
   const peers = new Set()
   let channel = null
   let rtc = null
-  let sendRtc = null
+  let action = null
 
   const handle = (msg) => {
     if (!msg) return
@@ -19,7 +19,7 @@ export function openRoom(roomId, { getEvents, onEvents, onPeers }) {
 
   const post = (msg) => {
     try { channel?.postMessage(msg) } catch { /* channel closed */ }
-    try { sendRtc?.(msg) } catch { /* no peers yet */ }
+    action?.send(msg).catch(() => { /* no peers yet */ })
   }
 
   try {
@@ -29,13 +29,12 @@ export function openRoom(roomId, { getEvents, onEvents, onPeers }) {
 
   try {
     rtc = joinRoom({ appId: APP_ID }, roomId)
-    const [send, get] = rtc.makeAction('lbs')
-    sendRtc = send
-    get((msg) => handle(msg))
+    action = rtc.makeAction('lbs')
+    action.onMessage = (msg) => handle(msg)
     rtc.onPeerJoin = (id) => {
       peers.add(id)
       onPeers(peers.size)
-      send({ t: 'snap', evs: getEvents() }, id)
+      action.send({ t: 'snap', evs: getEvents() }, { target: id }).catch(() => { /* peer left */ })
     }
     rtc.onPeerLeave = (id) => {
       peers.delete(id)
