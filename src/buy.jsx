@@ -125,7 +125,7 @@ function BagDialog({ bagId, onClose }) {
                   </div>
                 </fieldset>
                 <label className="fld"><span>Note to the shop (optional)</span><input className="field" value={f.note} onChange={set('note')} maxLength={80} /></label>
-                <p className="muted demo-note">Demo only. No payment is taken, and your details are shared with everyone in this room. Use made-up info.</p>
+                <p className="muted demo-note">Demo only. No payment is taken, and your details pass through public relay servers and show up for everyone in this room. Use made-up info.</p>
                 {error && <div className="notice" role="alert">{error}</div>}
                 <button className="btn big" type="submit">Reserve for {peso(bag.price)}</button>
               </form>

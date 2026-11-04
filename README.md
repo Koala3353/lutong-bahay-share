@@ -18,11 +18,12 @@ npm run dev
 
 ## How live sync works
 
-There is no server. Phones in the same room code connect to each other with WebRTC (via [Trystero](https://github.com/dmotz/trystero)), and tabs on one device use BroadcastChannel. Every vote, bag and grab is an event, and each device derives the same screen from the same events. If a phone cannot reach the others, the app keeps working on that device alone.
+There is no server of our own. Every device posts small messages to a few public [Nostr](https://nostr.com) relays over normal WebSockets (ephemeral events, which relays forward to live listeners and do not store) and listens for its room's messages. Tabs on one device also use BroadcastChannel. Every vote, bag and reservation is an event, and each device derives the same screen from the same events. Every ~12 seconds devices compare event ids and send each other whatever is missing, so a phone that slept or joined late catches up.
 
 Notes for the presentation:
 
-- Test the QR flow on the venue's Wi-Fi first. Some school networks block peer-to-peer traffic.
+- Messages pass through public relays and can be read by anyone who knows the room code, so use made-up details only.
+- The header shows how many devices are in the room. If a phone says "1 device", it is not reaching the relays.
 - The food waste figure uses a placeholder of 0.4 kg per meal (`KG_PER_MEAL` in `src/store.jsx`). Replace it with a sourced number.
 - Shops and prices in `src/seed.js` are made up.
 
