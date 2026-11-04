@@ -24,16 +24,23 @@ export function getPeerId() {
 
 const storageKey = (room) => `lbs-events-${room}`
 
+const MAX_AGE = 12 * 60 * 60 * 1000
+
+// Old rehearsal data should not leak into tomorrow's room, so saved events expire.
 function loadEvents(room) {
   try {
-    return JSON.parse(localStorage.getItem(storageKey(room)) || '[]')
+    const saved = JSON.parse(localStorage.getItem(storageKey(room)) || '[]')
+    return saved.filter((e) => Date.now() - e.ts < MAX_AGE)
   } catch {
     return []
   }
 }
 
 // Turns the raw event log into what the screens show. Pure, so every device lands on the same result.
-export function derive(events) {
+export function derive(allEvents) {
+  // A reset event hides everything posted before it, so a rehearsal can be wiped before the real run.
+  const resetTs = allEvents.reduce((t, e) => (e.type === 'reset' && e.ts > t ? e.ts : t), 0)
+  const events = allEvents.filter((e) => e.seed || e.type === 'reset' || e.ts > resetTs)
   const bags = new Map()
   const votes = new Map()
   const grabs = new Map()

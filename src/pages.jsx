@@ -161,7 +161,10 @@ export function Poll({ go }) {
 }
 
 export function Screen() {
-  const { room, bags, counts, totalVotes, impact, peers } = useRoom()
+  const { room, bags, counts, totalVotes, impact, peers, publish } = useRoom()
+  const reset = () => {
+    if (window.confirm('Clear all votes, bags and reservations in this room for everyone?')) publish({ type: 'reset' })
+  }
   const url = roomUrl(room, 'poll')
   const feed = useMemo(
     () => bags.flatMap((b) => b.winners.map((w) => ({ ...w, bag: b }))).sort((a, b) => b.ts - a.ts).slice(0, 6),
@@ -175,6 +178,7 @@ export function Screen() {
           <QrCode text={url} size={260} />
           <div className="code">{room}</div>
           <p className="muted">{peers + 1} {peers === 0 ? 'device' : 'devices'} connected</p>
+          <button className="btn alt small" onClick={reset}>Reset room</button>
         </div>
         <div className="panel">
           <h2>When did you last throw away food?</h2>

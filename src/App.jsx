@@ -23,7 +23,7 @@ function Header({ room, page }) {
         <a className="brand" href="#/"><Mascot size={40} title="" /> Lutong Bahay Share</a>
         {room && (
           <>
-            <span className="room-chip"><span className={`dot ${peers > 0 ? 'live' : ''}`} />Room {room}</span>
+            <span className="room-chip"><span className={`dot ${peers > 0 ? 'live' : ''}`} />Room {room} · {peers + 1} {peers === 0 ? 'device' : 'devices'}</span>
             <nav className="nav" aria-label="Room">
               {tabs.map(([id, label]) => (
                 <a key={id} href={`#/r/${room}/${id}`} aria-current={page === id ? 'page' : undefined}>{label}</a>
