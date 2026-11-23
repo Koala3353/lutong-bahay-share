@@ -96,19 +96,11 @@ export function Home({ go }) {
         <div className="wrap">
           <div className="section-head">
             <h2>How the business earns</h2>
-            <p>The app earns through a commission on every bag sold, plus an optional subscription for shops.</p>
+            <p>The app earns from one thing only: a small commission on every bag sold.</p>
           </div>
-          <div className="split">
-            <div className="card">
-              <h3>Commission</h3>
-              <p>The app receives a {a.pct || 0}% commission on each bag sold through it. Try the numbers below: they are our assumptions, and you can change any of them.</p>
-            </div>
-            <div className="card">
-              <h3>Seller subscription</h3>
-              <p>Shops that want extra features can choose an optional subscription on top of the commission.</p>
-            </div>
-          </div>
-          <div className="card" style={{ marginTop: 24 }}>
+          <div className="card">
+            <h3>Commission</h3>
+            <p style={{ marginBottom: 24 }}>The app receives a {a.pct || 0}% commission on each bag sold through it. Try the numbers below: they are our assumptions, and you can change any of them.</p>
             <ModelCalculator a={a} setA={setA} />
           </div>
         </div>
