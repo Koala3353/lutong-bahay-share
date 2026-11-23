@@ -3,7 +3,7 @@ import { finalizeEvent, generateSecretKey, getPublicKey } from 'nostr-tools/pure
 // Every device posts small messages to a few public Nostr relays (plain WebSockets, so it works on any
 // network that allows normal web traffic) and listens for the same room's messages. Kind 20078 is in
 // the ephemeral range: relays forward it to live subscribers and never store it.
-const RELAYS = ['wss://nos.lol', 'wss://relay.primal.net', 'wss://offchain.pub', 'wss://relay.damus.io']
+const RELAYS = ['wss://nos.lol', 'wss://relay.primal.net', 'wss://offchain.pub', 'wss://relay.snort.social', 'wss://nostr.mom']
 const KIND = 20078
 const SYNC_MS = 12000
 const PRESENCE_TTL = 32000
