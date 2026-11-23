@@ -3,7 +3,7 @@ import { ImpactCounter } from './components/parts.jsx'
 import { PageHead } from './pages.jsx'
 import { PAY_LABEL, newCode, pctOff, peso } from './format.js'
 import { randomBuyerForm } from './random.js'
-import { useRoom } from './store.jsx'
+import { KG_PER_MEAL, useRoom } from './store.jsx'
 
 const KINDS = ['All', 'Bakery', 'Restaurant', 'Grocery']
 
@@ -148,11 +148,25 @@ export function Buy() {
     [bags, peerId],
   )
 
+  const personal = useMemo(() => {
+    let meals = 0
+    let pesos = 0
+    for (const o of mine) {
+      meals += o.bag.meals
+      pesos += o.bag.orig - o.bag.price
+    }
+    return { meals, pesos, kg: Math.round(meals * KG_PER_MEAL * 10) / 10 }
+  }, [mine])
+
   return (
     <div className="page wrap">
       <PageHead mood="cheer" bag title="Grab a bag before it sells out">You are a buyer. Open a bag to see what is inside, then reserve it and pick it up before closing.</PageHead>
       <div className="panel" style={{ marginBottom: 24 }}>
-        <ImpactCounter impact={impact} />
+        <h2>Your impact</h2>
+        <ImpactCounter impact={personal} />
+        <p className="muted small-note">
+          {mine.length === 0 ? 'Reserve a bag to start counting. ' : ''}Everyone in this room together: {impact.meals} meals and ₱{impact.pesos.toLocaleString('en-PH')} saved.
+        </p>
       </div>
 
       {mine.length > 0 && (

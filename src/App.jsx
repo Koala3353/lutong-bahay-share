@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import Mascot from './components/Mascot.jsx'
 import { RoomProvider, useRoom } from './store.jsx'
-import { Home, Poll, Screen } from './pages.jsx'
+import { Poll, Screen } from './pages.jsx'
+import { Home } from './home.jsx'
 import { Shop } from './shop.jsx'
 import { Buy } from './buy.jsx'
 
@@ -12,6 +13,8 @@ const parse = () => {
   return { room: null, page: 'home' }
 }
 
+const JUMPS = [['tour', 'App tour'], ['model', 'Business model'], ['video', 'Video'], ['issues', 'Issues'], ['why', 'Why an app'], ['lessons', 'STS 10'], ['impact', 'Impact']]
+
 const go = (path) => { location.hash = path }
 
 function Header({ room, page }) {
@@ -21,6 +24,13 @@ function Header({ room, page }) {
     <header className="top">
       <div className="wrap top-in">
         <a className="brand" href="#/"><Mascot size={40} title="" /> Lutong Bahay Share</a>
+        {!room && (
+          <nav className="nav" aria-label="Sections">
+            {JUMPS.map(([id, label]) => (
+              <button key={id} className="nav-btn" onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })}>{label}</button>
+            ))}
+          </nav>
+        )}
         {room && (
           <>
             <span className="room-chip"><span className={`dot ${peers > 0 ? 'live' : ''}`} />Room {room} · {peers + 1} {peers === 0 ? 'device' : 'devices'}</span>

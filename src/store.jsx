@@ -5,7 +5,7 @@ import { SEED_BAGS } from './seed.js'
 const RoomContext = createContext(null)
 export const useRoom = () => useContext(RoomContext)
 
-const KG_PER_MEAL = 0.4 // placeholder estimate, replace with a sourced figure
+export const KG_PER_MEAL = 0.4 // placeholder estimate, replace with a sourced figure
 
 const uid = () => Math.random().toString(36).slice(2, 10)
 
